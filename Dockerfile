@@ -71,7 +71,7 @@ USER appuser
 # Copy the executable from the "build" stage.
 COPY --from=build /bin/server /bin/
 
-COPY index.html /bin/index.html
+# COPY index.html /bin/index.html
 
 # Expose the port that the application listens on.
 EXPOSE 3334
