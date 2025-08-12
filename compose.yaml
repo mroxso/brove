@@ -1,0 +1,49 @@
+services:
+  server:
+    build:
+      context: .
+      target: final
+    ports:
+      - 3334:3334
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - RELAY_NAME=brove relay
+      - RELAY_PUBKEY=82c1b69ddb84fb9a8cc68616118a9a1c794dfeb29c8d2ea2cec59af21f9df804
+      # - RELAY_DESCRIPTION=this is my custom and private relay
+      - RELAY_ICON=https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fliquipedia.net%2Fcommons%2Fimages%2F3%2F35%2FSCProbe.jpg&f=1&nofb=1&ipt=0cbbfef25bce41da63d910e86c3c343e6c3b9d63194ca9755351bb7c2efa3359&ipo=images
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=khatru-relay
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+    expose:
+      - 5432
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:4.23
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@example.me
+      PGADMIN_DEFAULT_PASSWORD: nostr#pgadmin
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - 15432:80
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    depends_on:
+    - db
+
+volumes:
+  db-data:
+  pgadmin:
